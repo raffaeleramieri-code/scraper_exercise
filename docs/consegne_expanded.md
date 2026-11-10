@@ -27,6 +27,7 @@
 src/
 ├── __init__.py              c'è già
 ├── consts.py                fase 1
+├── cli.py                   fase 6
 ├── scrape/
 │   ├── __init__.py          fase 1
 │   └── scraper.py           fase 1
@@ -274,19 +275,73 @@ dati reali e, dal secondo giorno in poi, lo storico ha una linea.
 
 ## Fase 6 · Pipeline completa
 
+`main.py` si lancia da terminale e accetta delle opzioni:
+
+```bash
+uv run python main.py                 # tutta la pipeline
+uv run python main.py --step clean    # un solo passo
+uv run python main.py --force         # riscarica anche se il raw di oggi esiste già
+uv run python main.py --help          # elenco delle opzioni (lo genera argparse da solo)
+```
+
+Le opzioni le legge `argparse`. Il parser sta in un **modulo a parte**,
+`src/cli.py` ("cli" sta per *command line interface*), e `main.py` lo importa.
+Così `main.py` contiene solo la logica della pipeline, e le opzioni si trovano
+tutte in un posto.
+
+### `src/cli.py`
+
+**Import:** `argparse`.
+
+| Funzione | Cosa fa |
+|---|---|
+| `parse_args()` | crea un `argparse.ArgumentParser` con le due opzioni qui sotto e restituisce `parser.parse_args()` |
+
+**Le opzioni di `parse_args`:**
+
+| Opzione | Come si crea | Valore |
+|---|---|---|
+| `--step` | `add_argument("--step", choices=[...], default="all", help="...")` | uno tra `scrape`, `transform`, `clean`, `history`, `all` |
+| `--force` | `add_argument("--force", action="store_true", help="...")` | `True` se l'opzione c'è, altrimenti `False` |
+
+`cli.py` non ha il blocco `if __name__ == "__main__":`: non si lancia da solo,
+viene solo importato da `main.py`.
+
 ### `main.py`
 
-1. Importa `YugiohScraper`, `ScraperError`, `run` di `transform`, `build_cards` e
-   `build_history`.
-2. Nella funzione `main()` chiama in ordine: scraper → trasformazione → pulizia →
-   storico. Prima di ogni passo stampa cosa sta facendo, dopo stampa quanti secondi
-   ci ha messo (`time.perf_counter()`).
-3. Metti tutto dentro un `try` / `except ScraperError`: se l'API non risponde,
-   stampa un messaggio chiaro invece di un traceback lungo.
+**Import:** `time`, `parse_args` da `src.cli`, `YugiohScraper` e `ScraperError`,
+`run` di `transform`, `build_cards` e `build_history`.
 
-**Info:** `docs/faq/package.md` · `README.md` · `docs/faq/git_e_uv.md`
+| Funzione | Cosa fa |
+|---|---|
+| `run_step(step, force)` | con un `if` / `elif` lancia il passo richiesto: `"scrape"` → `YugiohScraper().run(force=force)`, `"transform"` → `run()`, `"clean"` → `build_cards()`, `"history"` → `build_history()` |
+| `main()` | legge le opzioni con `parse_args()` e lancia i passi (dettagli sotto) |
 
-**Fatto quando:** `uv run python main.py` fa tutto da solo e l'app funziona.
+**Come funziona `main`:**
+
+1. `args = parse_args()`;
+2. se `args.step` è `"all"` i passi sono
+   `["scrape", "transform", "clean", "history"]`, altrimenti solo `[args.step]`;
+3. un `for` sui passi: prima di ognuno stampa cosa sta facendo, poi chiama
+   `run_step(step, args.force)` e alla fine stampa quanti secondi ci ha messo
+   (`time.perf_counter()`);
+4. tutto il `for` sta dentro un `try` / `except ScraperError`: se l'API non
+   risponde, stampa un messaggio chiaro invece di un traceback lungo.
+
+**Da cambiare nella fase 1:** `run(self)` diventa `run(self, force=False)`. Se
+`force` è `True`, scarica anche se il file di oggi esiste già.
+
+**In fondo al file:** blocco `if __name__ == "__main__":` che chiama `main()`.
+
+**Info:** `docs/faq/argparse.md` · `docs/faq/package.md` · `README.md` ·
+`docs/faq/git_e_uv.md`
+
+**Fatto quando:**
+
+- `uv run python main.py` fa tutto da solo e l'app funziona;
+- `uv run python main.py --step clean` rifà solo la pulizia;
+- `uv run python main.py --force` riscarica il raw di oggi;
+- `uv run python main.py --step boh` dà errore e mostra le scelte possibili.
 
 ---
 

@@ -113,3 +113,4 @@ cartella `data/` li crei tu durante le fasi (vedi `docs/consegne.md`).
 | [docs/faq/parquet.md](docs/faq/parquet.md) | cos'è un file Parquet e perché lo usiamo |
 | [docs/faq/streamlit.md](docs/faq/streamlit.md) | cos'è Streamlit e come funziona l'app |
 | [docs/faq/package.md](docs/faq/package.md) | moduli, package e `__init__.py`: come importare le funzioni |
+| [docs/faq/argparse.md](docs/faq/argparse.md) | come dare opzioni a uno script da terminale |

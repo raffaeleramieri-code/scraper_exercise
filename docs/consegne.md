@@ -25,7 +25,7 @@
 | 3 · Trasformazione | porti il raw in una lista di carte piatte in `data/wip/` | `src/raw_to_wip/card.py`, `transform.py` |
 | 4 · Pulizia | sistemi tipi e valori mancanti e scrivi `cards.parquet` | `src/wip_to_clean/clean.py` |
 | 5 · Storico | costruisci `price_history.parquet` da tutti i wip | `src/wip_to_clean/history.py` |
-| 6 · Pipeline | lanci tutto con un solo comando | `main.py` |
+| 6 · Pipeline | lanci tutto con un solo comando | `src/cli.py`, `main.py` |
 
 ---
 
@@ -87,8 +87,12 @@ linea.
 
 - `main.py` lancia in ordine scraper → trasformazione → pulizia → storico, con i
   tempi di ogni passo e un messaggio chiaro se l'API non risponde.
+- Il parser `argparse` sta in `src/cli.py` e `main.py` lo importa. Accetta due opzioni: `--step` per lanciare un solo passo
+  (`scrape`, `transform`, `clean`, `history`) e `--force` per riscaricare il raw di
+  oggi anche se esiste già.
 
-**Fatto quando:** `uv run python main.py` fa tutto da solo.
+**Fatto quando:** `uv run python main.py` fa tutto da solo e
+`uv run python main.py --step clean` rifà solo la pulizia.
 
 ---
 
@@ -109,4 +113,5 @@ linea.
 | cos'è un Parquet | `docs/faq/parquet.md` |
 | comandi git e uv | `docs/faq/git_e_uv.md` |
 | come funziona l'app | `docs/faq/streamlit.md` |
+| opzioni da terminale (`--step`, `--force`) | `docs/faq/argparse.md` |
 | i dettagli di ogni fase | `docs/consegne_expanded.md` |
