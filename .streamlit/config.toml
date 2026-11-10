@@ -1,0 +1,8 @@
+# Configurazione di Streamlit, letta quando lanci `streamlit run` dalla root del progetto.
+
+[server]
+# ricarica l'app appena salvi un file
+runOnSave = true
+
+[browser]
+gatherUsageStats = false

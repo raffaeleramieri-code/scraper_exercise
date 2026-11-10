@@ -1,0 +1,11 @@
+[project]
+name = "valerio-repo"
+version = "0.1.0"
+description = "Archivio Yu-Gi-Oh!: pipeline ETL locale (raw -> wip -> cleaned) e dashboard Streamlit"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "polars>=2.0.0",
+    "requests>=2.34.2",
+    "streamlit>=1.65.0",
+]

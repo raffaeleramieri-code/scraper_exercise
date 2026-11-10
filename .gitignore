@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Dati prodotti dalla pipeline: si rigenerano, non vanno su git
+data/
+
+# Segreti e chiavi API
+.env
+.streamlit/secrets.toml
+
+# Notebook, log, cache
+.ipynb_checkpoints/
+*.log
+.pytest_cache/
+.ruff_cache/
+
+# Editor e sistema operativo
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
